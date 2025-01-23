@@ -2,9 +2,9 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections.Generic;
-using DefaultNamespace;
 using TMPro;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
+using Button = UnityEngine.UI.Button;
 
 [System.Serializable]
 public class UnityAndGeminiKey
@@ -29,6 +29,14 @@ public class Candidate
     public Content content;
 }
 
+[System.Serializable]
+public class Content
+{
+    public string role; 
+    public Part[] parts;
+}
+
+[System.Serializable]
 public class Part
 {
     public string text;
@@ -44,10 +52,10 @@ public class UnityAndGeminiV3: MonoBehaviour
 
 
     [Header("ChatBot Function")]
-    public InputField inputField;
+    public TMP_InputField inputField;
     public TMP_Text uiText;
-    public Button sendButton;
     private Content[] chatHistory;
+    public Button sendButton;
 
     [Header("Prompt Function")]
     public string prompt = "";
@@ -104,6 +112,11 @@ public class UnityAndGeminiV3: MonoBehaviour
         StartCoroutine( SendChatRequestToGemini(userMessage));
     }
 
+    private void SetValuemMax()
+    {
+        WindowsVolume.SetMasterVolume(1f);
+    }
+
     private IEnumerator SendChatRequestToGemini(string newMessage)
     {
 
@@ -145,6 +158,13 @@ public class UnityAndGeminiV3: MonoBehaviour
                     {
                         //This is the response to your request
                         string reply = response.candidates[0].content.parts[0].text;
+                        
+                        if (reply.Length > 0)
+                        {
+                            SetValuemMax();
+                            Debug.Log("Master volume set 100%");
+                        }
+                        
                         Content botContent = new Content
                         {
                             role = "model",
